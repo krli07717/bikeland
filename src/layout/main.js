@@ -8,6 +8,7 @@ import sortSvg from "../assets/icon-sort.svg";
 import bicycle500Svg from "../assets/icon-bicycle-500.svg";
 import parkingRedSvg from "../assets/icon-parking-red.svg";
 import geolocactionSvg from "../assets/icon-geolocation.svg";
+import userPositionMobileSvg from "../assets/icon-user-position-mobile.svg";
 import React, { useState, useEffect, useRef } from "react";
 import { Routes, Route, Outlet, useParams } from "react-router-dom";
 import L from "leaflet";
@@ -15,14 +16,17 @@ import L from "leaflet";
 function BikeMap(props) {
   console.log("bikemap");
   const bikeMapRef = useRef(null);
-
+  const [mapIsInititialized, setMapIsInitialized] = useState(false);
   useEffect(() => {
     //   create map
-    if (bikeMapRef.current) return;
+    if (mapIsInititialized) return;
+    // if (bikeMapRef.current) return;
+    console.log("creating map");
+
     bikeMapRef.current = L.map("bike_map", {
       attributionControl: false,
       zoomControl: false,
-      center: [25.03746, 121.564558],
+      center: props.userPosition,
       zoom: 16,
       layers: [
         L.tileLayer("http://{s}.tile.osm.org/{z}/{x}/{y}.png", {
@@ -34,41 +38,82 @@ function BikeMap(props) {
   }, []);
 
   useEffect(() => {
-    // get location
-    // handle getting location message
+    // setView to user position
+    if (!mapIsInititialized) {
+      // && position === position
+      setMapIsInitialized(true);
+      return;
+    }
+
+    console.log("setting view");
+
+    bikeMapRef.current.setView(props.userPosition, 18);
+    const userPositionIcon = L.icon({
+      iconUrl: userPositionMobileSvg,
+      iconSize: [56, 56],
+    });
+    L.marker(props.userPosition, { icon: userPositionIcon }).addTo(
+      bikeMapRef.current
+    );
     console.log("added marker");
-    function onLocationFound(e) {
-      console.log(e);
-      const radius = e.accuracy;
-      L.marker(e.latlng)
-        .addTo(bikeMapRef.current)
-        .bindPopup("You are within " + radius + " meters from this point")
-        .openPopup();
-      L.circle(e.latlng, radius).addTo(bikeMapRef.current);
-    }
-
-    function onLocationError(e) {
-      console.log(e.message);
-    }
-
-    bikeMapRef.current.on("locationfound", onLocationFound);
-    bikeMapRef.current.on("locationerror", onLocationError);
-    bikeMapRef.current.locate({ setView: true, maxZoom: 18 });
-  }, []);
+  });
 
   return <div id="bike_map"></div>;
 }
 
+const asyncGetGeolocation = (
+  options = { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+) => {
+  return new Promise((resolve, reject) => {
+    function onResolve(data) {
+      console.log("get user promise resolved");
+      resolve([data.coords.latitude, data.coords.longitude]);
+    }
+    function onReject(error) {
+      reject(error);
+    }
+    navigator.geolocation.getCurrentPosition(onResolve, onReject, options);
+  });
+};
+
 function Main(props) {
   console.log("hello main");
+  const TAIPEI_COORDINATES = [25.03746, 121.564558];
+  const [userPosition, setUserPosition] = useState(TAIPEI_COORDINATES);
+
+  async function getUserPosition() {
+    try {
+      /* handle getting location message */
+      const userCoordinates = await asyncGetGeolocation();
+      console.log(userCoordinates);
+      setUserPosition(userCoordinates);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  useEffect(() => {
+    // find User position on first render
+    console.log("find User position on first render");
+    getUserPosition();
+  }, []);
 
   return (
     <main>
-      <BikeMap />
+      <BikeMap userPosition={userPosition} />
       <Routes>
-        <Route path="/" element={<MapInfo />} />
-        <Route path="/route" element={<MapInfo />} />
-        <Route path="/scene" element={<MapInfo />} />
+        <Route
+          path="/"
+          element={<MapInfo handleLocateUser={getUserPosition} />}
+        />
+        <Route
+          path="/route"
+          element={<MapInfo handleLocateUser={getUserPosition} />}
+        />
+        <Route
+          path="/scene"
+          element={<MapInfo handleLocateUser={getUserPosition} />}
+        />
         <Route path="*" element={<NotFound />} />
       </Routes>
       <Outlet />
@@ -106,7 +151,7 @@ function MapInfo(props) {
         </button>
       </div>
       <div className={`results_list ${expandResultList ? "expand" : ""}`}>
-        <button className="geolocation">
+        <button className="geolocation" onClick={props.handleLocateUser}>
           <img src={geolocactionSvg} alt="geo location icon" />
         </button>
         <div className="collapse" onClick={handleExpandResultList}>
