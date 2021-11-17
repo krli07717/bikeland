@@ -1,0 +1,211 @@
+#bike_map {
+  height: 500px;
+}
+
+main {
+  position: relative;
+}
+
+.bikemap_info {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 999;
+}
+
+.bikemap_info .find_type_wrapper {
+  position: absolute;
+  display: flex;
+  gap: 4px;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 4px 6px;
+  border-radius: 20px;
+  background-color: var(--grey-100);
+  width: 200px;
+  height: 36px;
+  box-shadow: 4px 4px 20px 0px #7676764d;
+}
+
+.find_type {
+  display: inline-flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 4px;
+  width: 92px;
+  height: 28px;
+  border-radius: 16px;
+  padding: 4px 12px;
+  color: var(--primary-400);
+  background-color: var(--grey-100);
+}
+
+.find_type.selected {
+  background-color: var(--primary-400);
+  color: var(--grey-100);
+}
+
+.find_type_img {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+}
+
+.find_type_img img {
+  width: 100%;
+  height: 100%;
+}
+
+button.geolocation {
+  position: absolute;
+  top: -60px;
+  right: 20px;
+  width: 40px;
+  height: 40px;
+  background-color: var(--primary-400);
+  border-radius: 50%;
+  box-shadow: 4px 4px 20px 0px #7676764d;
+}
+
+.results_list {
+  position: absolute;
+  top: 365px;
+  transform: translateX(-50%);
+  background-color: var(--grey-100);
+  width: 100vw;
+  border-radius: 8px;
+  box-shadow: 0px -2px 4px 0px #7676764d;
+}
+
+.results_list.expand {
+  top: 150px;
+}
+
+.results_list .collapse {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  width: 48px;
+  height: 16px;
+  border-radius: 4px 4px 0 0;
+  top: -16px;
+  left: 50%;
+  transform: translateX(-50%);
+  box-shadow: 0px -2px 4px 0px #7676764d;
+  background-color: var(--grey-100);
+}
+
+.filter {
+  padding: 20px 24px;
+  display: flex;
+  gap: 12px;
+}
+
+.filter input[type="search"] {
+  flex: 1;
+  border-radius: 8px;
+  padding: 6px 16px;
+  background-color: var(--grey-200);
+}
+
+.filter input[type="search"]:placeholder-shown {
+  background: url("../assets/icon-search.svg") no-repeat calc(100% - 16px)
+    center;
+  background-color: var(--grey-200);
+}
+
+.filter .sort {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid var(--primary-300);
+  border-radius: 8px;
+  background-color: var(--grey-100);
+  color: var(--primary-400);
+}
+
+.results {
+  padding: 0 20px 24px 20px;
+  max-height: 110px;
+  overflow: auto;
+}
+
+.results_list.expand .results {
+  max-height: 320px;
+}
+
+.bike_result .info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 1px 0;
+}
+
+.bike_result .info h3 {
+  color: var(--primary-500);
+}
+
+.bike_result .info .status {
+  display: inline-block;
+  border-radius: 4px;
+  padding: 1px 8px;
+  border: 1px solid var(--accent-300);
+  color: var(--accent-500);
+}
+
+.bike_result .distance {
+  display: flex;
+  margin-left: auto;
+  gap: 4px;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--grey-500);
+}
+
+.bike_result .available {
+  display: flex;
+  gap: 15px;
+  margin-top: 8px;
+}
+
+.bike_result .available > div {
+  padding: 4px 20px;
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 4px;
+  border-radius: 8px;
+}
+
+.bike_result .available_bikes {
+  background-color: var(--primary-100);
+  color: var(--primary-500);
+}
+
+.bike_result .available_parks {
+  background-color: var(--alert-100);
+  color: var(--alert-600);
+}
+
+.bike_result .available .quantity {
+  margin-left: auto;
+}
+
+.bike_result + .bike_result {
+  margin-top: 40px;
+  position: relative;
+}
+
+.bike_result + .bike_result::before {
+  content: "";
+  position: absolute;
+  top: -20px;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background-color: var(--grey-300);
+}
