@@ -5,9 +5,109 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* min-height: 100vh; */
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-    monospace;
+* {
+  box-sizing: border-box;
+}
+
+a {
+  text-decoration: none;
+}
+
+button,
+input {
+  border: none;
+}
+
+button {
+  cursor: pointer;
+}
+
+/* style varibles */
+:root {
+  /* colors */
+  --primary-600: #292e19;
+  --primary-500: #474f2c;
+  --primary-400: #738047;
+  --primary-300: #a4b375;
+  --primary-200: #cbd3b0;
+  --primary-100: #dfe4ce;
+  --accent-600: #a3651e;
+  --accent-500: #c67a24;
+  --accent-400: #de994a;
+  --accent-300: #eabd8a;
+  --accent-200: #f5dfc6;
+  --accent-100: #faf0e5;
+  --alert-600: #8c3046;
+  --alert-500: #bc3253;
+  --alert-400: #e75578;
+  --alert-300: #f27594;
+  --alert-200: #f1b2c1;
+  --alert-100: #f7d4dd;
+  --grey-600: #464646;
+  --grey-500: #767676;
+  --grey-400: #9a9a9a;
+  --grey-300: #c5c5c5;
+  --grey-200: #eeeeee;
+  --grey-100: #ffffff;
+}
+
+/* typography */
+
+/* reset */
+h1,
+h2,
+h3,
+h4,
+h5,
+.typography-content,
+.typography-button,
+.typography-caption {
+  margin: 0;
+  line-height: 1.2;
+}
+
+/* font-weight */
+
+.typography-medium {
+  font-weight: 500;
+}
+.typography-bold {
+  font-weight: 700;
+}
+
+/* font-size */
+
+.typography-h1 {
+  font-size: 45px;
+}
+
+.typography-h2 {
+  font-size: 36px;
+}
+
+.typography-h3 {
+  font-size: 32px;
+}
+
+.typography-h4 {
+  font-size: 26px;
+}
+
+.typography-h5 {
+  font-size: 22px;
+}
+
+.typography-content {
+  font-size: 18px;
+}
+
+.typography-button {
+  font-size: 15px;
+}
+
+.typography-caption {
+  font-size: 12px;
 }
