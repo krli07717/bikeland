@@ -3,15 +3,17 @@ import bicycleWhiteSvg from "../assets/icon-bicycle-white.svg";
 import parkingSvg from "../assets/icon-parking.svg";
 import mapMarkerGreySvg from "../assets/icon-map-marker-grey.svg";
 import collapseTopSvg from "../assets/icon-collapse-top.svg";
+import collapseDownSvg from "../assets/icon-collapse-down.svg";
 import sortSvg from "../assets/icon-sort.svg";
 import bicycle500Svg from "../assets/icon-bicycle-500.svg";
 import parkingRedSvg from "../assets/icon-parking-red.svg";
 import geolocactionSvg from "../assets/icon-geolocation.svg";
-import React, { useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Routes, Route, Outlet, useParams } from "react-router-dom";
 import L from "leaflet";
 
 function BikeMap(props) {
+  console.log("bikemap");
   const bikeMapRef = useRef(null);
 
   useEffect(() => {
@@ -53,6 +55,7 @@ function BikeMap(props) {
     bikeMapRef.current.on("locationerror", onLocationError);
     bikeMapRef.current.locate({ setView: true, maxZoom: 18 });
   }, []);
+
   return <div id="bike_map"></div>;
 }
 
@@ -74,6 +77,18 @@ function Main(props) {
 }
 
 function MapInfo(props) {
+  const [expandResultList, setExpandResultList] = useState(false);
+
+  function handleExpandResultList() {
+    setExpandResultList((isExpanded) => !isExpanded);
+  }
+
+  const collapseImg = expandResultList ? (
+    <img src={collapseDownSvg} alt="collapse down icon" />
+  ) : (
+    <img src={collapseTopSvg} alt="collapse top icon" />
+  );
+
   return (
     <div className="bikemap_info">
       <div className="find_type_wrapper">
@@ -90,13 +105,12 @@ function MapInfo(props) {
           找車位
         </button>
       </div>
-      <div className="results_list">
+      <div className={`results_list ${expandResultList ? "expand" : ""}`}>
         <button className="geolocation">
           <img src={geolocactionSvg} alt="geo location icon" />
         </button>
-        {/* results_list toggle "expand" class */}
-        <div className="collapse">
-          <img src={collapseTopSvg} alt="collapse top icon" />
+        <div className="collapse" onClick={handleExpandResultList}>
+          {collapseImg}
         </div>
         <div className="filter">
           <input

@@ -79,6 +79,7 @@ button.geolocation {
   width: 100vw;
   border-radius: 8px;
   box-shadow: 0px -2px 4px 0px #7676764d;
+  transition: top 0.3s ease-out;
 }
 
 .results_list.expand {
@@ -140,6 +141,7 @@ button.geolocation {
   padding: 0 20px 24px 20px;
   max-height: 110px;
   overflow: auto;
+  transition: max-height 0.3s ease-out;
 }
 
 .results_list.expand .results {
