@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import "./header.css";
 import logoSvg from "../assets/logo-light.svg";
@@ -17,11 +18,11 @@ function Logo() {
   );
 }
 
-function Hamburger() {
+function Hamburger({ handleNavOpen }) {
   return (
-    <div className="hamburger">
+    <button className="hamburger" onClick={handleNavOpen}>
       <img src={hamburgerSvg} alt="menu icon" />
-    </div>
+    </button>
   );
 }
 
@@ -74,13 +75,19 @@ function Nav(props) {
 
 function Header(props) {
   console.log("hello header");
+  const [navOpen, setNavOpen] = useState(false);
+
+  function handleNavOpen() {
+    setNavOpen((navOpen) => !navOpen);
+  }
+
   return (
     <header>
       <div className="header_wrapper">
         <Logo />
-        <Hamburger />
+        <Hamburger handleNavOpen={handleNavOpen} />
       </div>
-      <Nav />
+      {navOpen && <Nav />}
     </header>
   );
 }
