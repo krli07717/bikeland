@@ -71,7 +71,9 @@ button.geolocation {
 
 .results_list {
   position: absolute;
-  top: 365px;
+  top: 455px;
+  /* navExpand: 365px will fit*/
+  /* !navExpand: 455px will fit*/
   transform: translateX(-50%);
   background-color: var(--grey-100);
   width: 100vw;
@@ -80,7 +82,13 @@ button.geolocation {
 }
 
 .results_list.expand {
-  top: 150px;
+  top: 240px;
+  /* navExpand: 150px will fit*/
+  /* !navExpand: 240px will fit*/
+}
+
+.results_list.expand .results {
+  min-height: 300px;
 }
 
 .results_list .collapse {
