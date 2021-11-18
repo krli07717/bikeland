@@ -328,6 +328,23 @@ function MapInfo({
 }) {
   const [expandResultList, setExpandResultList] = useState(false);
   const [keyword, setKeyword] = useState("");
+  const [sortMethod, setSortMethod] = useState(0);
+
+  const sortMethods = {
+    0: (stationA, stationB) => 0, //fetched default
+    1: (stationA, stationB) =>
+      stationB.availableRentBikes - stationA.availableRentBikes,
+    2: (stationA, stationB) =>
+      stationB.availableReturnBikes - stationA.availableReturnBikes,
+    3: (stationA, stationB) => {
+      const stationAHour = /.*T(\d*)/g.exec(stationA.srcUpdateTime)[1];
+      const stationAMinute = /.*T\d*:(\d*)/g.exec(stationA.srcUpdateTime)[1];
+      const stationBHour = /.*T(\d*)/g.exec(stationB.srcUpdateTime)[1];
+      const stationBMinute = /.*T\d*:(\d*)/g.exec(stationB.srcUpdateTime)[1];
+      if (stationAHour === stationBHour) return stationBMinute - stationAMinute;
+      return stationBHour - stationAHour;
+    },
+  };
 
   function handleExpandResultList() {
     setExpandResultList((isExpanded) => !isExpanded);
@@ -335,6 +352,11 @@ function MapInfo({
 
   function handleSetKeyword(e) {
     setKeyword(e.target.value);
+  }
+
+  function handleSortResults() {
+    console.log(sortMethod);
+    setSortMethod((state) => ++state % 4);
   }
 
   const collapseImg = expandResultList ? (
@@ -353,6 +375,7 @@ function MapInfo({
         station.stationAddress.includes(keyword)
       );
     })
+    .sort(sortMethods[sortMethod])
     .map((station) => {
       const stationStatusText =
         station.serviceStatus !== 1
@@ -399,7 +422,6 @@ function MapInfo({
         );
       const updateTime = /.*T(\d*:\d*)/g.exec(station.srcUpdateTime)[1];
       const stationName = /(YouBike)?(.*)/g.exec(station.stationName)[2];
-      console.log(stationName);
       return (
         <div className="bike_result" key={station.stationId}>
           <div className="info">
@@ -507,7 +529,10 @@ function MapInfo({
             value={keyword}
             onChange={handleSetKeyword}
           />
-          <button className="sort typography-bold typography-caption">
+          <button
+            className="sort typography-bold typography-caption"
+            onClick={handleSortResults}
+          >
             <img src={sortSvg} alt="sort icon" />
             排序
           </button>
