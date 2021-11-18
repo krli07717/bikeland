@@ -166,6 +166,11 @@ button.geolocation:active {
   background-color: var(--primary-500);
 }
 
+button.geolocation:disabled {
+  background-color: var(--grey-300);
+  box-shadow: 4px 4px 20px 0px #7676764d;
+}
+
 .results_list {
   position: absolute;
   top: 455px;
@@ -183,7 +188,7 @@ button.geolocation:active {
   text-align: center;
   background-color: var(--alert-100);
   color: var(--alert-400);
-  width: 100%;
+  margin: 0 24px;
   padding: 20px 0;
   border-radius: 20px;
 }
@@ -261,7 +266,7 @@ button.geolocation:active {
 
 /* .filter, */
 .results > div {
-  animation: slideUp 0.7s linear;
+  animation: slideUp 0.3s linear;
 }
 
 @keyframes slideUp {

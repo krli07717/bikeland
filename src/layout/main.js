@@ -200,7 +200,7 @@ function Main(props) {
   const TAIPEI_COORDINATES = [25.03746, 121.564558];
   const [userPosition, setUserPosition] = useState(TAIPEI_COORDINATES);
   const [bikesAvailable, setBikesAvailable] = useState([]);
-  const [showLocatingMessage, setShowLocatingMessage] = useState(false);
+  const [isLocatingUser, setIsLocatingUser] = useState(false);
   const [isFindingBikes, setIsFindingBikes] = useState(true);
 
   function handleFindingType() {
@@ -209,9 +209,9 @@ function Main(props) {
 
   async function handleLocateUser() {
     try {
-      setShowLocatingMessage(true);
+      setIsLocatingUser(true);
       const userCoordinates = await asyncGetGeolocation();
-      setShowLocatingMessage(false);
+      setIsLocatingUser(false);
       console.log(userCoordinates);
       setUserPosition(userCoordinates);
     } catch (error) {
@@ -247,6 +247,7 @@ function Main(props) {
         let stationStatus = {
           stationId: stationData[i].StationUID,
           stationName: stationData[i].StationName.Zh_tw,
+          stationAddress: stationData[i].StationAddress.Zh_tw,
           stationPosition: {
             lat: stationData[i].StationPosition.PositionLat,
             lng: stationData[i].StationPosition.PositionLon,
@@ -287,7 +288,7 @@ function Main(props) {
             <MapInfo
               handleLocateUser={handleLocateUser}
               bikesAvailable={bikesAvailable}
-              showLocatingMessage={showLocatingMessage}
+              isLocatingUser={isLocatingUser}
               handleFindingType={handleFindingType}
               isFindingBikes={isFindingBikes}
             />
@@ -321,14 +322,19 @@ function Main(props) {
 function MapInfo({
   handleLocateUser,
   bikesAvailable,
-  showLocatingMessage,
+  isLocatingUser,
   handleFindingType,
   isFindingBikes,
 }) {
   const [expandResultList, setExpandResultList] = useState(false);
+  const [keyword, setKeyword] = useState("");
 
   function handleExpandResultList() {
     setExpandResultList((isExpanded) => !isExpanded);
+  }
+
+  function handleSetKeyword(e) {
+    setKeyword(e.target.value);
   }
 
   const collapseImg = expandResultList ? (
@@ -339,84 +345,97 @@ function MapInfo({
 
   // implement sort
 
-  const results = bikesAvailable.map((station) => {
-    const stationStatusText =
-      station.serviceStatus !== 1
-        ? "未營運"
-        : station.availableRentBikes > 0 && station.availableReturnBikes > 0
-        ? "可借可還"
-        : station.availableReturnBikes > 0
-        ? "只可停車"
-        : "只可借車";
-    const stationStatusStyle =
-      station.serviceStatus !== 1
-        ? "off"
-        : station.availableRentBikes === 0 || station.availableReturnBikes === 0
-        ? "limited"
-        : "";
-    const availableBikesStyle =
-      station.availableRentBikes === 0
-        ? "none"
-        : station.availableRentBikes <= 5
-        ? "few"
-        : "";
-    const availableParksStyle =
-      station.availableReturnBikes === 0
-        ? "none"
-        : station.availableReturnBikes <= 5
-        ? "few"
-        : "";
-    const availableBikesImg =
-      station.availableRentBikes === 0 ? (
-        <img src={bicycleGreySvg} alt="bicycle icon" />
-      ) : station.availableRentBikes <= 5 ? (
-        <img src={bicycleRedSvg} alt="bicycle icon" />
-      ) : (
-        <img src={bicycle500Svg} alt="bicycle icon" />
+  const results = bikesAvailable
+    .filter((station) => {
+      if (!keyword) return true;
+      return (
+        station.stationName.includes(keyword) ||
+        station.stationAddress.includes(keyword)
       );
-    const availableParksImg =
-      station.availableReturnBikes === 0 ? (
-        <img src={parkingGreySvg} alt="parking icon" />
-      ) : station.availableReturnBikes <= 5 ? (
-        <img src={parkingRedSvg} alt="parking icon" />
-      ) : (
-        <img src={parkingSvg} alt="parking icon" />
-      );
-    const updateTime = /.*T(\d*:\d*)/g.exec(station.srcUpdateTime)[1];
-    return (
-      <div className="bike_result" key={station.stationId}>
-        <div className="info">
-          <h3 className="typography-bold typography-button">
-            {station.stationName}
-          </h3>
-          <span
-            className={`status ${stationStatusStyle} typography-medium typography-caption`}
-          >
-            {stationStatusText}
-          </span>
-          <span className="distance typography-medium typography-caption">
-            {`${updateTime} 更新`}
-          </span>
-        </div>
-        <div className="available">
-          <div className={`available_bikes ${availableBikesStyle}`}>
-            {availableBikesImg}
-            <span className="typography-medium typography-button">可租借</span>
-            <span className="quantity typography-bold typography-h5">
-              {station.availableRentBikes}
+    })
+    .map((station) => {
+      const stationStatusText =
+        station.serviceStatus !== 1
+          ? "未營運"
+          : station.availableRentBikes > 0 && station.availableReturnBikes > 0
+          ? "可借可還"
+          : station.availableReturnBikes > 0
+          ? "只可停車"
+          : "只可借車";
+      const stationStatusStyle =
+        station.serviceStatus !== 1
+          ? "off"
+          : station.availableRentBikes === 0 ||
+            station.availableReturnBikes === 0
+          ? "limited"
+          : "";
+      const availableBikesStyle =
+        station.availableRentBikes === 0
+          ? "none"
+          : station.availableRentBikes <= 5
+          ? "few"
+          : "";
+      const availableParksStyle =
+        station.availableReturnBikes === 0
+          ? "none"
+          : station.availableReturnBikes <= 5
+          ? "few"
+          : "";
+      const availableBikesImg =
+        station.availableRentBikes === 0 ? (
+          <img src={bicycleGreySvg} alt="bicycle icon" />
+        ) : station.availableRentBikes <= 5 ? (
+          <img src={bicycleRedSvg} alt="bicycle icon" />
+        ) : (
+          <img src={bicycle500Svg} alt="bicycle icon" />
+        );
+      const availableParksImg =
+        station.availableReturnBikes === 0 ? (
+          <img src={parkingGreySvg} alt="parking icon" />
+        ) : station.availableReturnBikes <= 5 ? (
+          <img src={parkingRedSvg} alt="parking icon" />
+        ) : (
+          <img src={parkingSvg} alt="parking icon" />
+        );
+      const updateTime = /.*T(\d*:\d*)/g.exec(station.srcUpdateTime)[1];
+      const stationName = /(YouBike)?(.*)/g.exec(station.stationName)[2];
+      console.log(stationName);
+      return (
+        <div className="bike_result" key={station.stationId}>
+          <div className="info">
+            <h3 className="typography-bold typography-button">{stationName}</h3>
+            <span
+              className={`status ${stationStatusStyle} typography-medium typography-caption`}
+            >
+              {stationStatusText}
+            </span>
+            <span className="distance typography-medium typography-caption">
+              {`${updateTime} 更新`}
             </span>
           </div>
-          <div className={`available_parks ${availableParksStyle}`}>
-            {availableParksImg}
-            <span className="typography-medium typography-button">可停車</span>
-            <span className="quantity typography-bold typography-h5">
-              {station.availableReturnBikes}
-            </span>
+          <div className="available">
+            <div className={`available_bikes ${availableBikesStyle}`}>
+              {availableBikesImg}
+              <span className="typography-medium typography-button">
+                可租借
+              </span>
+              <span className="quantity typography-bold typography-h5">
+                {station.availableRentBikes}
+              </span>
+            </div>
+            <div className={`available_parks ${availableParksStyle}`}>
+              {availableParksImg}
+              <span className="typography-medium typography-button">
+                可停車
+              </span>
+              <span className="quantity typography-bold typography-h5">
+                {station.availableReturnBikes}
+              </span>
+            </div>
           </div>
         </div>
-      </div>
-    );
-  });
+      );
+    });
 
   return (
     <div className="bikemap_info">
@@ -464,38 +483,40 @@ function MapInfo({
           </button>
         </label>
       </div>
-      {showLocatingMessage ? (
+      {isLocatingUser ? (
         <div className="locating_message">
           <span className="typography-bold typography-h4">定位中</span>
         </div>
       ) : null}
       <div className={`results_list ${expandResultList ? "expand" : ""}`}>
-        <button className="geolocation" onClick={handleLocateUser}>
+        <button
+          className="geolocation"
+          disabled={isLocatingUser ? true : false}
+          onClick={handleLocateUser}
+        >
           <img src={geolocactionSvg} alt="geo location icon" />
         </button>
         <div className="collapse" onClick={handleExpandResultList}>
           {collapseImg}
         </div>
         <div className="filter">
-          {results.length ? (
-            <>
-              <input
-                className="typography-medium typography-caption"
-                type="search"
-                placeholder="搜尋站點或鄰近地點"
-                value=""
-              />
-              <button className="sort typography-bold typography-caption">
-                <img src={sortSvg} alt="sort icon" />
-                排序
-              </button>
-            </>
-          ) : (
-            <h3 className="no_results typography-bold typography-h5">
-              一公里內沒有youbike車站
-            </h3>
-          )}
+          <input
+            className="typography-medium typography-caption"
+            type="search"
+            placeholder="搜尋站點或鄰近地點"
+            value={keyword}
+            onChange={handleSetKeyword}
+          />
+          <button className="sort typography-bold typography-caption">
+            <img src={sortSvg} alt="sort icon" />
+            排序
+          </button>
         </div>
+        {results.length ? null : (
+          <h3 className="no_results typography-bold typography-h5">
+            沒有搜尋結果
+          </h3>
+        )}
         <div className="results">{results}</div>
       </div>
     </div>
