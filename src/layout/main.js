@@ -544,12 +544,15 @@ function MapInfo({
             排序
           </button>
         </div>
-        {results.length ? null : (
-          <h3 className="no_results typography-bold typography-h5">
-            沒有搜尋結果
-          </h3>
-        )}
-        <div className="results">{results}</div>
+        <div className="results">
+          {results.length ? (
+            results
+          ) : (
+            <h3 className="no_results typography-bold typography-h5">
+              沒有搜尋結果
+            </h3>
+          )}
+        </div>
       </div>
     </div>
   );
