@@ -2,6 +2,12 @@ header {
   background-color: var(--primary-400);
 }
 
+@media (min-width: 1200px) {
+  header {
+    position: relative;
+  }
+}
+
 header a {
   display: inline-block;
 }
@@ -17,9 +23,22 @@ header img {
   justify-content: space-between;
 }
 
+@media (min-width: 1200px) {
+  .header_wrapper {
+    padding: 22px 72px;
+  }
+}
+
 .logo {
   width: 106px;
   height: 16px;
+}
+
+@media (min-width: 1200px) {
+  .logo {
+    width: 214px;
+    height: 32px;
+  }
 }
 
 .logo a,
@@ -34,6 +53,12 @@ header img {
   width: 18px;
   height: 18px;
   background-color: transparent;
+}
+
+@media (min-width: 1200px) {
+  .hamburger {
+    display: none;
+  }
 }
 
 .hamburger img {
@@ -69,8 +94,50 @@ header img {
   background-color: var(--primary-300);
 }
 
+@media (min-width: 1200px) {
+  .nav_wrapper a + a::before {
+    display: none;
+  }
+}
+
 nav {
   animation: fadeIn 0.5s ease-out;
+}
+
+nav.hide {
+  display: none;
+}
+
+@media (min-width: 1200px) {
+  nav,
+  nav.hide {
+    display: block;
+    position: absolute;
+    top: 20px;
+    right: 72px;
+    z-index: 9999;
+    animation: none;
+  }
+
+  .nav_wrapper {
+    padding: 0;
+    background-color: transparent;
+    gap: 16px;
+  }
+
+  .nav_wrapper a {
+    width: 100px;
+    height: 36px;
+    background-color: var(--grey-100);
+    border-radius: 8px;
+    flex-direction: row;
+    padding: 8px 16px;
+    gap: 4px;
+  }
+
+  .nav_wrapper a h2 {
+    font-size: 15px;
+  }
 }
 
 @keyframes fadeIn {
@@ -88,6 +155,14 @@ nav {
   margin: 0 auto;
 }
 
+@media (min-width: 1200px) {
+  .navlink_img {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+  }
+}
+
 .emergency_phone {
   background-color: var(--accent-100);
   color: var(--accent-600);
@@ -95,6 +170,12 @@ nav {
   justify-content: center;
   padding: 8px 0;
   gap: 5px;
+}
+
+@media (min-width: 1200px) {
+  .emergency_phone {
+    display: none;
+  }
 }
 
 .emergency_phone .navlink_img {

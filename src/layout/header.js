@@ -35,7 +35,7 @@ const emergencyPhone = (
   </a>
 );
 
-function Nav(props) {
+function Nav({ navOpen }) {
   const navLinkInfo = [
     {
       linkPath: "/",
@@ -57,7 +57,7 @@ function Nav(props) {
     },
   ];
   return (
-    <nav>
+    <nav className={navOpen ? "" : "hide"}>
       <div className="nav_wrapper">
         {navLinkInfo.map(({ linkPath, imgSrc, imgAlt, linkText }) => (
           <Link key={linkText} to={linkPath}>
@@ -87,7 +87,7 @@ function Header(props) {
         <Logo />
         <Hamburger handleNavOpen={handleNavOpen} />
       </div>
-      {navOpen && <Nav />}
+      <Nav navOpen={navOpen} />
     </header>
   );
 }
