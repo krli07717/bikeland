@@ -1,5 +1,5 @@
 #bike_map {
-  height: 500px;
+  height: calc(100vh - 126px); /* navbar expand = 126px*/
 }
 
 main {
@@ -10,7 +10,6 @@ main {
   position: absolute;
   top: 0;
   left: 50%;
-  transform: translateX(-50%);
   z-index: 999;
 }
 
@@ -172,16 +171,13 @@ button.geolocation:disabled {
 }
 
 .results_list {
-  position: absolute;
-  top: 455px;
-  /* navExpand: 365px will fit*/
-  /* !navExpand: 455px will fit*/
+  position: fixed;
+  bottom: 0;
   transform: translateX(-50%);
   background-color: var(--grey-100);
   width: 100vw;
   border-radius: 8px;
   box-shadow: 0px -2px 4px 0px #7676764d;
-  transition: top 0.3s ease-out;
 }
 
 .results_list .no_results {
@@ -189,14 +185,8 @@ button.geolocation:disabled {
   background-color: var(--alert-100);
   color: var(--alert-400);
   margin: 0 24px;
-  padding: 20px 0;
+  padding: 30px 0;
   border-radius: 20px;
-}
-
-.results_list.expand {
-  top: 240px;
-  /* navExpand: 150px will fit*/
-  /* !navExpand: 240px will fit*/
 }
 
 .results_list.expand .results {
@@ -264,7 +254,6 @@ button.geolocation:disabled {
   transition: max-height 0.3s ease-out;
 }
 
-/* .filter, */
 .results > div {
   animation: slideUp 0.3s linear;
 }
