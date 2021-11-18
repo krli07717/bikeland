@@ -58,6 +58,20 @@ main {
   height: 100%;
 }
 
+.locating_message {
+  position: absolute;
+  top: 60px;
+  transform: translateX(-50%);
+  width: 70vw;
+  text-align: center;
+  background-color: var(--grey-200);
+  color: var(--grey-600);
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 4px 4px 20px 0px #7676764d;
+  opacity: 0.9;
+}
+
 button.geolocation {
   position: absolute;
   top: -60px;
@@ -67,6 +81,10 @@ button.geolocation {
   background-color: var(--primary-400);
   border-radius: 50%;
   box-shadow: 4px 4px 20px 0px #7676764d;
+}
+
+button.geolocation:active {
+  background-color: var(--primary-500);
 }
 
 .results_list {
@@ -80,6 +98,15 @@ button.geolocation {
   border-radius: 8px;
   box-shadow: 0px -2px 4px 0px #7676764d;
   transition: top 0.3s ease-out;
+}
+
+.results_list .no_results {
+  text-align: center;
+  background-color: var(--alert-100);
+  color: var(--alert-400);
+  width: 100%;
+  padding: 20px 0;
+  border-radius: 20px;
 }
 
 .results_list.expand {
@@ -121,6 +148,10 @@ button.geolocation {
   background-color: var(--grey-200);
 }
 
+.filter input[type="search"]:focus {
+  outline: 2px solid var(--primary-300);
+}
+
 .filter input[type="search"]:placeholder-shown {
   background: url("../assets/icon-search.svg") no-repeat calc(100% - 16px)
     center;
@@ -138,11 +169,29 @@ button.geolocation {
   color: var(--primary-400);
 }
 
+.filter .sort:focus {
+  outline: 2px solid var(--primary-300);
+}
+
 .results {
   padding: 0 20px 24px 20px;
   max-height: 110px;
   overflow: auto;
   transition: max-height 0.3s ease-out;
+}
+
+/* .filter, */
+.results > div {
+  animation: slideUp 0.4s linear;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+  }
+  to {
+    transform: translateY(0);
+  }
 }
 
 .results_list.expand .results {
@@ -158,6 +207,10 @@ button.geolocation {
 
 .bike_result .info h3 {
   color: var(--primary-500);
+  max-width: 150px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .bike_result .info .status {
@@ -166,6 +219,16 @@ button.geolocation {
   padding: 1px 8px;
   border: 1px solid var(--accent-300);
   color: var(--accent-500);
+}
+
+.bike_result .info .status.off {
+  border: 1px solid var(--grey-100);
+  color: var(--grey-400);
+}
+
+.bike_result .info .status.limited {
+  border: 1px solid var(--alert-300);
+  color: var(--alert-400);
 }
 
 .bike_result .distance {
@@ -192,14 +255,22 @@ button.geolocation {
   border-radius: 8px;
 }
 
-.bike_result .available_bikes {
+.bike_result .available_bikes,
+.bike_result .available_parks {
   background-color: var(--primary-100);
   color: var(--primary-500);
 }
 
-.bike_result .available_parks {
+.bike_result .available_bikes.few,
+.bike_result .available_parks.few {
   background-color: var(--alert-100);
   color: var(--alert-600);
+}
+
+.bike_result .available_bikes.none,
+.bike_result .available_parks.none {
+  background-color: var(--grey-200);
+  color: var(--grey-400);
 }
 
 .bike_result .available .quantity {
