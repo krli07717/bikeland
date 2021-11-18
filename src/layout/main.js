@@ -355,7 +355,6 @@ function MapInfo({
   }
 
   function handleSortResults() {
-    console.log(sortMethod);
     setSortMethod((state) => ++state % 4);
   }
 
@@ -462,11 +461,15 @@ function MapInfo({
   return (
     <div className="bikemap_info">
       <div className="find_type_wrapper">
-        <label>
+        <label htmlFor="find_bikes">
           <input
             type="radio"
             name="find_type"
+            id="find_bikes"
             checked={isFindingBikes}
+            onChange={() => {
+              return;
+            }}
             hidden
           />
           <button
@@ -483,11 +486,15 @@ function MapInfo({
             找單車
           </button>
         </label>
-        <label>
+        <label htmlFor="find_parks">
           <input
             type="radio"
             name="find_type"
+            id="find_parks"
             checked={!isFindingBikes}
+            onChange={() => {
+              return;
+            }}
             hidden
           />
           <button
