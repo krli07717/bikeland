@@ -29,6 +29,85 @@ main {
   box-shadow: 4px 4px 20px 0px #7676764d;
 }
 
+.bikeMarker {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 38px !important;
+  height: 51px !important;
+  background: url("../assets/icon-bike-marker-green.svg") no-repeat;
+}
+
+.bikeMarker.few {
+  background: url("../assets/icon-bike-marker-red.svg") no-repeat;
+}
+
+.bikeMarker.none {
+  background: url("../assets/icon-bike-marker-grey.svg") no-repeat;
+}
+
+.bikeMarker .bikeMarker_number {
+  margin-bottom: 14px;
+  color: var(--primary-400);
+}
+
+.bikeMarker .bikeMarker_number.few {
+  color: var(--alert-400);
+}
+
+.bikeMarker .bikeMarker_number.few {
+  color: var(--grey-400);
+}
+
+.popupClass {
+  margin-left: 12px;
+  padding: 12px 20px;
+}
+
+.popup_info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.popup_info h3 {
+  color: var(--primary-500);
+}
+
+.popup_bikes,
+.popup_parks {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 4px;
+  padding: 5px 6px;
+  gap: 12px;
+  background-color: var(--primary-100);
+  color: var(--primary-500);
+}
+
+.popup_bikes.few,
+.popup_parks.few {
+  background-color: var(--alert-100);
+  color: var(--alert-600);
+}
+
+.popup_bikes.none,
+.popup_parks.none {
+  background-color: var(--grey-200);
+  color: var(--grey-500);
+}
+
+.popup_info .update_time {
+  margin-left: auto;
+  color: var(--grey-500);
+}
+
+.leaflet-popup-tip {
+  display: none;
+}
+
 .find_type {
   display: inline-flex;
   justify-content: space-between;
@@ -42,7 +121,7 @@ main {
   background-color: var(--grey-100);
 }
 
-.find_type.selected {
+input[name="find_type"]:checked ~ button.find_type {
   background-color: var(--primary-400);
   color: var(--grey-100);
 }
@@ -182,7 +261,7 @@ button.geolocation:active {
 
 /* .filter, */
 .results > div {
-  animation: slideUp 0.4s linear;
+  animation: slideUp 0.7s linear;
 }
 
 @keyframes slideUp {

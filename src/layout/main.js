@@ -3,9 +3,11 @@ import bicycleWhiteSvg from "../assets/icon-bicycle-white.svg";
 import parkingSvg from "../assets/icon-parking.svg";
 import parkingRedSvg from "../assets/icon-parking-red.svg";
 import parkingGreySvg from "../assets/icon-parking-grey.svg";
+import parkingWhiteSvg from "../assets/icon-parking-white.svg";
 import collapseTopSvg from "../assets/icon-collapse-top.svg";
 import collapseDownSvg from "../assets/icon-collapse-down.svg";
 import sortSvg from "../assets/icon-sort.svg";
+import bicycle400Svg from "../assets/icon-bicycle-400.svg";
 import bicycle500Svg from "../assets/icon-bicycle-500.svg";
 import bicycleRedSvg from "../assets/icon-bicycle-red.svg";
 import bicycleGreySvg from "../assets/icon-bicycle-grey.svg";
@@ -17,10 +19,12 @@ import { asyncGetGeolocation } from "../utils/getGeolocation";
 import fetchWithApiKey from "../utils/fetchTdxApi";
 import L from "leaflet";
 
-function BikeMap(props) {
+function BikeMap({ userPosition, bikesAvailable, isFindingBikes }) {
   console.log("bikemap");
   const bikeMapRef = useRef(null);
   const userPositionMarkerRef = useRef(null);
+  const bikeMarkersRef = useRef([]);
+
   useEffect(() => {
     //   create map
     if (bikeMapRef.current) return;
@@ -29,8 +33,8 @@ function BikeMap(props) {
     bikeMapRef.current = L.map("bike_map", {
       attributionControl: false,
       zoomControl: false,
-      center: props.userPosition,
-      zoom: 16,
+      center: userPosition,
+      zoom: 15,
       layers: [
         L.tileLayer("http://{s}.tile.osm.org/{z}/{x}/{y}.png", {
           attribution:
@@ -50,17 +54,17 @@ function BikeMap(props) {
     if (userPositionMarkerRef.current)
       bikeMapRef.current.removeLayer(userPositionMarkerRef.current);
 
-    bikeMapRef.current.setView(props.userPosition, 18);
+    bikeMapRef.current.setView(userPosition, 15);
 
-    // make icon
+    // create icon
     const userPositionIcon = L.icon({
       iconUrl: userPositionMobileSvg,
       iconSize: [56, 56],
     });
 
-    // make marker
+    // create marker
 
-    userPositionMarkerRef.current = L.marker(props.userPosition, {
+    userPositionMarkerRef.current = L.marker(userPosition, {
       icon: userPositionIcon,
     });
 
@@ -69,6 +73,123 @@ function BikeMap(props) {
     userPositionMarkerRef.current.addTo(bikeMapRef.current);
 
     console.log("added marker");
+  });
+
+  useEffect(() => {
+    if (!bikeMapRef.current) return; //no map
+
+    console.log("setting bike markers");
+
+    console.log(
+      `Current bike markers before readding: `,
+      bikeMarkersRef.current
+    );
+
+    //remove previous bike markers
+    bikeMarkersRef.current.forEach((bikeMarker) => {
+      // map remove bikeMarker
+      bikeMapRef.current.removeLayer(bikeMarker);
+    });
+
+    bikeMarkersRef.current = [];
+
+    bikesAvailable.forEach((station, index) => {
+      // assign created DivIcon to bikesRef
+
+      const bikeMarkerStatusStyle_bikes =
+        station.availableRentBikes === 0
+          ? "none"
+          : station.availableRentBikes <= 5
+          ? "few"
+          : "";
+
+      const bikeMarkerStatusStyle_parks =
+        station.availableReturnBikes === 0
+          ? "none"
+          : station.availableReturnBikes <= 5
+          ? "few"
+          : "";
+
+      const availableBikesStyle =
+        station.availableRentBikes === 0
+          ? "none"
+          : station.availableRentBikes <= 5
+          ? "few"
+          : "";
+
+      const availableParksStyle =
+        station.availableReturnBikes === 0
+          ? "none"
+          : station.availableReturnBikes <= 5
+          ? "few"
+          : "";
+
+      const availableBikesImg =
+        station.availableRentBikes === 0
+          ? `<img src=${bicycleGreySvg} alt="bicycle icon" />`
+          : station.availableRentBikes <= 5
+          ? `<img src=${bicycleRedSvg} alt="bicycle icon" />`
+          : `<img src=${bicycle500Svg} alt="bicycle icon" />`;
+
+      const availableParksImg =
+        station.availableReturnBikes === 0
+          ? `<img src=${parkingGreySvg} alt="parking icon" />`
+          : station.availableReturnBikes <= 5
+          ? `<img src=${parkingRedSvg} alt="parking icon" />`
+          : `<img src=${parkingSvg} alt="parking icon" />`;
+
+      bikeMarkersRef.current[index] = L.marker(
+        [station.stationPosition.lat, station.stationPosition.lng],
+        {
+          icon: L.divIcon({
+            html: `<span class="bikeMarker_number typography-bold typography-button">${
+              isFindingBikes
+                ? station.availableRentBikes
+                : station.availableReturnBikes
+            }</span>`,
+            className: `bikeMarker ${
+              isFindingBikes
+                ? bikeMarkerStatusStyle_bikes
+                : bikeMarkerStatusStyle_parks
+            }`,
+          }),
+        }
+      );
+
+      // bind popup to markers?
+      const popupHtml = `<div class="bikeMarkers_popup">
+        <h3 class="typography-bold typography-button">${
+          station.stationName
+        }</h3>
+        <div class="popup_info">
+            <div class="popup_bikes ${availableBikesStyle}">
+                ${availableBikesImg}
+                <span class="quantity typography-bold typography-button">${
+                  station.availableRentBikes
+                }</span>
+            </div>
+            <div class="popup_parks ${availableParksStyle}">
+                ${availableParksImg}
+                <span class="quantity typography-bold typography-button">${
+                  station.availableReturnBikes
+                }</span>
+            </div>
+            <span class="update_time typography-medium typography-caption">${
+              /.*T(\d*:\d*)/g.exec(station.srcUpdateTime)[1]
+            }更新</span>
+        </div>
+      </div>`;
+      bikeMarkersRef.current[index].bindPopup(popupHtml, {
+        className: "popupClass",
+      });
+
+      // bikesRef.current[index] add to map
+      bikeMarkersRef.current[index].addTo(bikeMapRef.current);
+
+      //   console.log(`added bikeMarker: `, bikeMarkersRef.current[index]);
+    });
+
+    console.log(`after adding markers bikesRef: `, bikeMarkersRef.current);
   });
 
   return <div id="bike_map"></div>;
@@ -80,8 +201,13 @@ function Main(props) {
   const [userPosition, setUserPosition] = useState(TAIPEI_COORDINATES);
   const [bikesAvailable, setBikesAvailable] = useState([]);
   const [showLocatingMessage, setShowLocatingMessage] = useState(false);
+  const [isFindingBikes, setIsFindingBikes] = useState(true);
 
-  async function getUserPosition() {
+  function handleFindingType() {
+    setIsFindingBikes((bool) => !bool);
+  }
+
+  async function handleLocateUser() {
     try {
       setShowLocatingMessage(true);
       const userCoordinates = await asyncGetGeolocation();
@@ -96,7 +222,7 @@ function Main(props) {
   //   useEffect(() => {
   //     // find User position on first render
   //     console.log("find User position on first render");
-  //     getUserPosition();
+  //     handleLocateUser();
   //   }, []);
 
   const API_KEY = {
@@ -149,15 +275,21 @@ function Main(props) {
 
   return (
     <main>
-      <BikeMap userPosition={userPosition} />
+      <BikeMap
+        userPosition={userPosition}
+        bikesAvailable={bikesAvailable}
+        isFindingBikes={isFindingBikes}
+      />
       <Routes>
         <Route
           path="/"
           element={
             <MapInfo
-              handleLocateUser={getUserPosition}
+              handleLocateUser={handleLocateUser}
               bikesAvailable={bikesAvailable}
               showLocatingMessage={showLocatingMessage}
+              handleFindingType={handleFindingType}
+              isFindingBikes={isFindingBikes}
             />
           }
         />
@@ -165,7 +297,7 @@ function Main(props) {
           path="/route"
           element={
             <MapInfo
-              handleLocateUser={getUserPosition}
+              handleLocateUser={handleLocateUser}
               bikesAvailable={bikesAvailable}
             />
           }
@@ -174,7 +306,7 @@ function Main(props) {
           path="/scene"
           element={
             <MapInfo
-              handleLocateUser={getUserPosition}
+              handleLocateUser={handleLocateUser}
               bikesAvailable={bikesAvailable}
             />
           }
@@ -186,7 +318,13 @@ function Main(props) {
   );
 }
 
-function MapInfo({ handleLocateUser, bikesAvailable, showLocatingMessage }) {
+function MapInfo({
+  handleLocateUser,
+  bikesAvailable,
+  showLocatingMessage,
+  handleFindingType,
+  isFindingBikes,
+}) {
   const [expandResultList, setExpandResultList] = useState(false);
 
   function handleExpandResultList() {
@@ -257,7 +395,7 @@ function MapInfo({ handleLocateUser, bikesAvailable, showLocatingMessage }) {
             {stationStatusText}
           </span>
           <span className="distance typography-medium typography-caption">
-            {`於${updateTime}更新`}
+            {`${updateTime} 更新`}
           </span>
         </div>
         <div className="available">
@@ -283,18 +421,48 @@ function MapInfo({ handleLocateUser, bikesAvailable, showLocatingMessage }) {
   return (
     <div className="bikemap_info">
       <div className="find_type_wrapper">
-        <button className="find_type selected typography-bold typography-button">
-          <div className="find_type_img">
-            <img src={bicycleWhiteSvg} alt="bicycle white icon" />
-          </div>
-          找單車
-        </button>
-        <button className="find_type typography-bold typography-button">
-          <div className="find_type_img">
-            <img src={parkingSvg} alt="parking icon" />
-          </div>
-          找車位
-        </button>
+        <label>
+          <input
+            type="radio"
+            name="find_type"
+            checked={isFindingBikes}
+            hidden
+          />
+          <button
+            className="find_type typography-bold typography-button"
+            onClick={handleFindingType}
+          >
+            <div className="find_type_img">
+              {isFindingBikes ? (
+                <img src={bicycleWhiteSvg} alt="bicycle white icon" />
+              ) : (
+                <img src={bicycle400Svg} alt="bicycle white icon" />
+              )}
+            </div>
+            找單車
+          </button>
+        </label>
+        <label>
+          <input
+            type="radio"
+            name="find_type"
+            checked={!isFindingBikes}
+            hidden
+          />
+          <button
+            className="find_type typography-bold typography-button"
+            onClick={handleFindingType}
+          >
+            <div className="find_type_img">
+              {isFindingBikes ? (
+                <img src={parkingSvg} alt="parking icon" />
+              ) : (
+                <img src={parkingWhiteSvg} alt="parking icon" />
+              )}
+            </div>
+            找車位
+          </button>
+        </label>
       </div>
       {showLocatingMessage ? (
         <div className="locating_message">
