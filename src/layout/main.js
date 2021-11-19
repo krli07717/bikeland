@@ -14,7 +14,6 @@ import bicycleGreySvg from "../assets/icon-bicycle-grey.svg";
 import geolocactionSvg from "../assets/icon-geolocation.svg";
 import userPositionMobileSvg from "../assets/icon-user-position-mobile.svg";
 import React, { useState, useEffect, useRef } from "react";
-import { Routes, Route } from "react-router-dom";
 import asyncGetGeolocation from "../utils/getGeolocation";
 import decideByAvailability from "../utils/decideByAvailability";
 import { getAvailableBikes } from "../utils/fetchTdxApi";
@@ -80,11 +79,6 @@ function BikeMap({ userPosition, bikesAvailable, isFindingBikes }) {
     if (!bikeMapRef.current) return; //no map
 
     console.log("setting bike markers");
-
-    // console.log(
-    //   `Current bike markers before readding: `,
-    //   bikeMarkersRef.current
-    // );
 
     //remove previous bike markers
     bikeMarkersRef.current.forEach((bikeMarker) => {
@@ -380,35 +374,20 @@ function Main(props) {
 
   return (
     <main>
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <>
-              <BikeMap
-                userPosition={userPosition}
-                bikesAvailable={bikesAvailable}
-                isFindingBikes={isFindingBikes}
-              />
-              <MapInfo
-                handleLocateUser={handleLocateUser}
-                bikesAvailable={bikesAvailable}
-                isLocatingUser={isLocatingUser}
-                handleFindingType={handleFindingType}
-                isFindingBikes={isFindingBikes}
-              />
-            </>
-          }
-        />
-        {/* <Route path="*" element={<NotFound />} /> */}
-      </Routes>
+      <BikeMap
+        userPosition={userPosition}
+        bikesAvailable={bikesAvailable}
+        isFindingBikes={isFindingBikes}
+      />
+      <MapInfo
+        handleLocateUser={handleLocateUser}
+        bikesAvailable={bikesAvailable}
+        isLocatingUser={isLocatingUser}
+        handleFindingType={handleFindingType}
+        isFindingBikes={isFindingBikes}
+      />
     </main>
   );
 }
-
-// function NotFound(props) {
-//   //redirect
-//   return <button>NOT FOUND</button>;
-// }
 
 export default Main;

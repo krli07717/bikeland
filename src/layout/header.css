@@ -20,7 +20,8 @@ header img {
 .header_wrapper {
   padding: 9px 20px;
   display: flex;
-  justify-content: space-between;
+  /* justify-content: space-between; */ /* 取消navbar */
+  justify-content: center;
 }
 
 @media (min-width: 1200px) {

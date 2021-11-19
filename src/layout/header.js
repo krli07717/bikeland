@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import "./header.css";
 import logoSvg from "../assets/logo-light.svg";
 import hamburgerSvg from "../assets/icon-hamburger.svg";
@@ -11,9 +10,9 @@ import phoneSvg from "../assets/icon-phone.svg";
 function Logo() {
   return (
     <h1 className="logo">
-      <Link to="/">
+      <a href="/">
         <img src={logoSvg} alt="Bikeland" />
-      </Link>
+      </a>
     </h1>
   );
 }
@@ -61,12 +60,12 @@ function Nav({ navOpen }) {
     <nav className={navOpen ? "" : "hide"}>
       <div className="nav_wrapper">
         {navLinkInfo.map(({ linkPath, imgSrc, imgAlt, linkText }) => (
-          <Link key={linkText} to={linkPath}>
+          <>
             <div className="navlink_img">
               <img src={imgSrc} alt={imgAlt} />
             </div>
             <h2 className="typography-bold typography-caption">{linkText}</h2>
-          </Link>
+          </>
         ))}
       </div>
       {emergencyPhone}
@@ -86,9 +85,9 @@ function Header(props) {
     <header>
       <div className="header_wrapper">
         <Logo />
-        <Hamburger handleNavOpen={handleNavOpen} />
+        {/* <Hamburger handleNavOpen={handleNavOpen} /> */}
       </div>
-      <Nav navOpen={navOpen} />
+      {/* <Nav navOpen={navOpen} /> */}
     </header>
   );
 }
