@@ -10,7 +10,11 @@ import phoneSvg from "../assets/icon-phone.svg";
 function Logo() {
   return (
     <h1 className="logo">
-      <a href="/">
+      <a
+        target="_blank"
+        rel="noreferrer"
+        href="https://github.com/krli07717/bikeland"
+      >
         <img src={logoSvg} alt="Bikeland" />
       </a>
     </h1>
