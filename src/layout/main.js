@@ -192,6 +192,16 @@ function BikeMap({ userPosition, bikesAvailable, isFindingBikes }) {
     console.log(`after adding markers bikesRef: `, bikeMarkersRef.current);
   });
 
+  useEffect(() => {
+    return function clearMap() {
+      console.log("clearMap exec");
+      if (bikeMapRef.current) {
+        bikeMapRef.current.remove();
+        bikeMapRef.current = null;
+      }
+    };
+  }, []);
+
   return <div id="bike_map"></div>;
 }
 
