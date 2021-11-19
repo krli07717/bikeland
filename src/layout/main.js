@@ -16,7 +16,7 @@ import userPositionMobileSvg from "../assets/icon-user-position-mobile.svg";
 import React, { useState, useEffect, useRef } from "react";
 import { Routes, Route, Outlet, useParams } from "react-router-dom";
 import { asyncGetGeolocation } from "../utils/getGeolocation";
-import fetchWithApiKey from "../utils/fetchTdxApi";
+import { getAvailableBikes } from "../utils/fetchTdxApi";
 import L from "leaflet";
 
 function BikeMap({ userPosition, bikesAvailable, isFindingBikes }) {
@@ -235,53 +235,17 @@ function Main(props) {
   //     handleLocateUser();
   //   }, []);
 
-  const API_KEY = {
-    APP_ID: process.env.REACT_APP_APP_ID,
-    APP_KEY: process.env.REACT_APP_APP_KEY,
-  };
-
-  const fetchTdxApi = fetchWithApiKey(API_KEY);
-
-  async function getAvailableBikes() {
-    try {
-      const [lat, lng] = userPosition;
-      const stationUrl = `https://ptx.transportdata.tw/MOTC/v2/Bike/Station/NearBy?$top=30&$spatialFilter=nearby(${lat},${lng},1000)&$format=JSON`;
-      const bikeUrl = `https://ptx.transportdata.tw/MOTC/v2/Bike/Availability/NearBy?$top=30&$spatialFilter=nearby(${lat},${lng},1000)&$format=JSON`;
-      const data = await Promise.allSettled([
-        fetchTdxApi(stationUrl),
-        fetchTdxApi(bikeUrl),
-      ]);
-      const result = [];
-      const [stationData, bikeData] = [data[0].value, data[1].value];
-      for (let i = 0; i < stationData.length; i++) {
-        let stationStatus = {
-          stationId: stationData[i].StationUID,
-          stationName: stationData[i].StationName.Zh_tw,
-          stationAddress: stationData[i].StationAddress.Zh_tw,
-          stationPosition: {
-            lat: stationData[i].StationPosition.PositionLat,
-            lng: stationData[i].StationPosition.PositionLon,
-          },
-          serviceStatus: bikeData[i].ServiceStatus,
-          availableRentBikes: bikeData[i].AvailableRentBikes,
-          availableReturnBikes: bikeData[i].AvailableReturnBikes,
-          srcUpdateTime: bikeData[i].SrcUpdateTime,
-        };
-        result.push(stationStatus);
-      }
-      console.log(result);
-      setBikesAvailable(result);
-      return result;
-      // 地點換時間
-    } catch (error) {
-      throw error;
-    }
-  }
-
   useEffect(() => {
     console.log("fetching available bikes");
-    // first time fetchinng Bike Availability
-    getAvailableBikes();
+    async function getBikes(userPosition) {
+      try {
+        const bikes = await getAvailableBikes(userPosition);
+        setBikesAvailable(bikes);
+      } catch (error) {
+        throw error;
+      }
+    }
+    getBikes(userPosition);
   }, [userPosition]);
 
   return (
@@ -304,7 +268,7 @@ function Main(props) {
             />
           }
         />
-        <Route
+        {/* <Route
           path="/route"
           element={
             <MapInfo
@@ -321,10 +285,9 @@ function Main(props) {
               bikesAvailable={bikesAvailable}
             />
           }
-        />
+        /> */}
         <Route path="*" element={<NotFound />} />
       </Routes>
-      <Outlet />
     </main>
   );
 }
