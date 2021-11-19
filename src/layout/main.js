@@ -19,16 +19,24 @@ import { asyncGetGeolocation } from "../utils/getGeolocation";
 import { getAvailableBikes } from "../utils/fetchTdxApi";
 import L from "leaflet";
 
+function decideByAvailability(options) {
+  const { source, resultNone, resultFew, resultNormal } = options;
+  if (source === 0) return resultNone;
+  if (source <= 5) return resultFew;
+  return resultNormal;
+}
+
 function BikeMap({ userPosition, bikesAvailable, isFindingBikes }) {
-  console.log("bikemap");
+  console.log("hello bikemap");
   const bikeMapRef = useRef(null);
   const userPositionMarkerRef = useRef(null);
   const bikeMarkersRef = useRef([]);
 
   useEffect(() => {
-    //   create map
     if (bikeMapRef.current) return;
     console.log("creating map");
+
+    //   create map
 
     bikeMapRef.current = L.map("bike_map", {
       attributionControl: false,
@@ -72,18 +80,18 @@ function BikeMap({ userPosition, bikesAvailable, isFindingBikes }) {
 
     userPositionMarkerRef.current.addTo(bikeMapRef.current);
 
-    console.log("added marker");
-  });
+    console.log("added user marker");
+  }, [userPosition]);
 
   useEffect(() => {
     if (!bikeMapRef.current) return; //no map
 
     console.log("setting bike markers");
 
-    console.log(
-      `Current bike markers before readding: `,
-      bikeMarkersRef.current
-    );
+    // console.log(
+    //   `Current bike markers before readding: `,
+    //   bikeMarkersRef.current
+    // );
 
     //remove previous bike markers
     bikeMarkersRef.current.forEach((bikeMarker) => {
@@ -96,47 +104,47 @@ function BikeMap({ userPosition, bikesAvailable, isFindingBikes }) {
     bikesAvailable.forEach((station, index) => {
       // assign created DivIcon to bikesRef
 
-      const bikeMarkerStatusStyle_bikes =
-        station.availableRentBikes === 0
-          ? "none"
-          : station.availableRentBikes <= 5
-          ? "few"
-          : "";
+      const bikeMarkerStatusStyle_bikes = decideByAvailability({
+        source: station.availableRentBikes,
+        resultNone: "none",
+        resultFew: "few",
+        resultNormal: "",
+      });
 
-      const bikeMarkerStatusStyle_parks =
-        station.availableReturnBikes === 0
-          ? "none"
-          : station.availableReturnBikes <= 5
-          ? "few"
-          : "";
+      const bikeMarkerStatusStyle_parks = decideByAvailability({
+        source: station.availableReturnBikes,
+        resultNone: "none",
+        resultFew: "few",
+        resultNormal: "",
+      });
 
-      const availableBikesStyle =
-        station.availableRentBikes === 0
-          ? "none"
-          : station.availableRentBikes <= 5
-          ? "few"
-          : "";
+      const availableBikesStyle = decideByAvailability({
+        source: station.availableRentBikes,
+        resultNone: "none",
+        resultFew: "few",
+        resultNormal: "",
+      });
 
-      const availableParksStyle =
-        station.availableReturnBikes === 0
-          ? "none"
-          : station.availableReturnBikes <= 5
-          ? "few"
-          : "";
+      const availableParksStyle = decideByAvailability({
+        source: station.availableReturnBikes,
+        resultNone: "none",
+        resultFew: "few",
+        resultNormal: "",
+      });
 
-      const availableBikesImg =
-        station.availableRentBikes === 0
-          ? `<img src=${bicycleGreySvg} alt="bicycle icon" />`
-          : station.availableRentBikes <= 5
-          ? `<img src=${bicycleRedSvg} alt="bicycle icon" />`
-          : `<img src=${bicycle500Svg} alt="bicycle icon" />`;
+      const availableBikesImg = decideByAvailability({
+        source: station.availableRentBikes,
+        resultNone: `<img src=${bicycleGreySvg} alt="bicycle icon" />`,
+        resultFew: `<img src=${bicycleRedSvg} alt="bicycle icon" />`,
+        resultNormal: `<img src=${bicycle500Svg} alt="bicycle icon" />`,
+      });
 
-      const availableParksImg =
-        station.availableReturnBikes === 0
-          ? `<img src=${parkingGreySvg} alt="parking icon" />`
-          : station.availableReturnBikes <= 5
-          ? `<img src=${parkingRedSvg} alt="parking icon" />`
-          : `<img src=${parkingSvg} alt="parking icon" />`;
+      const availableParksImg = decideByAvailability({
+        source: station.availableReturnBikes,
+        resultNone: `<img src=${parkingGreySvg} alt="parking icon" />`,
+        resultFew: `<img src=${parkingRedSvg} alt="parking icon" />`,
+        resultNormal: `<img src=${parkingSvg} alt="parking icon" />`,
+      });
 
       bikeMarkersRef.current[index] = L.marker(
         [station.stationPosition.lat, station.stationPosition.lng],
@@ -156,41 +164,34 @@ function BikeMap({ userPosition, bikesAvailable, isFindingBikes }) {
         }
       );
 
+      const updateTime = /.*T(\d*:\d*)/g.exec(station.srcUpdateTime)[1];
+
       // bind popup to markers?
       const popupHtml = `<div class="bikeMarkers_popup">
-        <h3 class="typography-bold typography-button">${
-          station.stationName
-        }</h3>
+        <h3 class="typography-bold typography-button">${station.stationName}</h3>
         <div class="popup_info">
             <div class="popup_bikes ${availableBikesStyle}">
                 ${availableBikesImg}
-                <span class="quantity typography-bold typography-button">${
-                  station.availableRentBikes
-                }</span>
+                <span class="quantity typography-bold typography-button">${station.availableRentBikes}</span>
             </div>
             <div class="popup_parks ${availableParksStyle}">
                 ${availableParksImg}
-                <span class="quantity typography-bold typography-button">${
-                  station.availableReturnBikes
-                }</span>
+                <span class="quantity typography-bold typography-button">${station.availableReturnBikes}</span>
             </div>
-            <span class="update_time typography-medium typography-caption">${
-              /.*T(\d*:\d*)/g.exec(station.srcUpdateTime)[1]
-            }更新</span>
+            <span class="update_time typography-medium typography-caption">${updateTime}更新</span>
         </div>
       </div>`;
+
       bikeMarkersRef.current[index].bindPopup(popupHtml, {
         className: "popupClass",
       });
 
       // bikesRef.current[index] add to map
       bikeMarkersRef.current[index].addTo(bikeMapRef.current);
-
-      //   console.log(`added bikeMarker: `, bikeMarkersRef.current[index]);
     });
 
-    console.log(`after adding markers bikesRef: `, bikeMarkersRef.current);
-  });
+    // console.log(`after adding markers bikesRef: `, bikeMarkersRef.current);
+  }, [bikesAvailable, isFindingBikes]);
 
   useEffect(() => {
     return function clearMap() {
@@ -292,16 +293,8 @@ function Main(props) {
   );
 }
 
-function MapInfo({
-  handleLocateUser,
-  bikesAvailable,
-  isLocatingUser,
-  handleFindingType,
-  isFindingBikes,
-}) {
-  const [expandResultList, setExpandResultList] = useState(false);
-  const [keyword, setKeyword] = useState("");
-  const [sortMethod, setSortMethod] = useState(0);
+function BikeResults({ bikesAvailable, keyword, sortMethod }) {
+  console.log("hello bike results");
 
   const sortMethods = {
     0: (stationA, stationB) => 0, //fetched default
@@ -319,27 +312,7 @@ function MapInfo({
     },
   };
 
-  function handleExpandResultList() {
-    setExpandResultList((isExpanded) => !isExpanded);
-  }
-
-  function handleSetKeyword(e) {
-    setKeyword(e.target.value);
-  }
-
-  function handleSortResults() {
-    setSortMethod((state) => ++state % 4);
-  }
-
-  const collapseImg = expandResultList ? (
-    <img src={collapseDownSvg} alt="collapse down icon" />
-  ) : (
-    <img src={collapseTopSvg} alt="collapse top icon" />
-  );
-
-  // implement sort
-
-  const results = bikesAvailable
+  const bikeResults = bikesAvailable
     .filter((station) => {
       if (!keyword) return true;
       return (
@@ -364,34 +337,35 @@ function MapInfo({
             station.availableReturnBikes === 0
           ? "limited"
           : "";
-      const availableBikesStyle =
-        station.availableRentBikes === 0
-          ? "none"
-          : station.availableRentBikes <= 5
-          ? "few"
-          : "";
-      const availableParksStyle =
-        station.availableReturnBikes === 0
-          ? "none"
-          : station.availableReturnBikes <= 5
-          ? "few"
-          : "";
-      const availableBikesImg =
-        station.availableRentBikes === 0 ? (
-          <img src={bicycleGreySvg} alt="bicycle icon" />
-        ) : station.availableRentBikes <= 5 ? (
-          <img src={bicycleRedSvg} alt="bicycle icon" />
-        ) : (
-          <img src={bicycle500Svg} alt="bicycle icon" />
-        );
-      const availableParksImg =
-        station.availableReturnBikes === 0 ? (
-          <img src={parkingGreySvg} alt="parking icon" />
-        ) : station.availableReturnBikes <= 5 ? (
-          <img src={parkingRedSvg} alt="parking icon" />
-        ) : (
-          <img src={parkingSvg} alt="parking icon" />
-        );
+
+      const availableBikesStyle = decideByAvailability({
+        source: station.availableRentBikes,
+        resultNone: "none",
+        resultFew: "few",
+        resultNormal: "",
+      });
+
+      const availableParksStyle = decideByAvailability({
+        source: station.availableReturnBikes,
+        resultNone: "none",
+        resultFew: "few",
+        resultNormal: "",
+      });
+
+      const availableBikesImg = decideByAvailability({
+        source: station.availableRentBikes,
+        resultNone: <img src={bicycleGreySvg} alt="bicycle icon" />,
+        resultFew: <img src={bicycleRedSvg} alt="bicycle icon" />,
+        resultNormal: <img src={bicycle500Svg} alt="bicycle icon" />,
+      });
+
+      const availableParksImg = decideByAvailability({
+        source: station.availableReturnBikes,
+        resultNone: <img src={parkingGreySvg} alt="parking icon" />,
+        resultFew: <img src={parkingRedSvg} alt="parking icon" />,
+        resultNormal: <img src={parkingSvg} alt="parking icon" />,
+      });
+
       const updateTime = /.*T(\d*:\d*)/g.exec(station.srcUpdateTime)[1];
       const stationName = /(YouBike)?(.*)/g.exec(station.stationName)[2];
       return (
@@ -430,6 +404,61 @@ function MapInfo({
         </div>
       );
     });
+
+  const noBikeResults = (
+    <h3 className="no_results typography-bold typography-h5">沒有搜尋結果</h3>
+  );
+
+  return bikeResults.length ? bikeResults : noBikeResults;
+}
+
+function MapInfo({
+  handleLocateUser,
+  bikesAvailable,
+  isLocatingUser,
+  handleFindingType,
+  isFindingBikes,
+}) {
+  const [expandResultList, setExpandResultList] = useState(false);
+  const [keyword, setKeyword] = useState("");
+  const [sortMethod, setSortMethod] = useState(0);
+
+  function handleSortResults() {
+    setSortMethod((state) => ++state % 4);
+  }
+
+  function handleExpandResultList() {
+    setExpandResultList((isExpanded) => !isExpanded);
+  }
+
+  function handleSetKeyword(e) {
+    setKeyword(e.target.value);
+  }
+
+  const collapseTip = (
+    <div className="collapse" onClick={handleExpandResultList}>
+      {expandResultList ? (
+        <img src={collapseDownSvg} alt="collapse down icon" />
+      ) : (
+        <img src={collapseTopSvg} alt="collapse top icon" />
+      )}
+    </div>
+  );
+  const locatingMessage = (
+    <div className="locating_message">
+      <span className="typography-bold typography-h4">定位中</span>
+    </div>
+  );
+
+  const getLocationButton = (
+    <button
+      className="geolocation"
+      disabled={isLocatingUser ? true : false}
+      onClick={handleLocateUser}
+    >
+      <img src={geolocactionSvg} alt="geo location icon" />
+    </button>
+  );
 
   return (
     <div className="bikemap_info">
@@ -485,22 +514,10 @@ function MapInfo({
           </button>
         </label>
       </div>
-      {isLocatingUser ? (
-        <div className="locating_message">
-          <span className="typography-bold typography-h4">定位中</span>
-        </div>
-      ) : null}
+      {isLocatingUser ? locatingMessage : null}
       <div className={`results_list ${expandResultList ? "expand" : ""}`}>
-        <button
-          className="geolocation"
-          disabled={isLocatingUser ? true : false}
-          onClick={handleLocateUser}
-        >
-          <img src={geolocactionSvg} alt="geo location icon" />
-        </button>
-        <div className="collapse" onClick={handleExpandResultList}>
-          {collapseImg}
-        </div>
+        {getLocationButton}
+        {collapseTip}
         <div className="filter">
           <input
             className="typography-medium typography-caption"
@@ -518,13 +535,11 @@ function MapInfo({
           </button>
         </div>
         <div className="results">
-          {results.length ? (
-            results
-          ) : (
-            <h3 className="no_results typography-bold typography-h5">
-              沒有搜尋結果
-            </h3>
-          )}
+          <BikeResults
+            keyword={keyword}
+            sortMethod={sortMethod}
+            bikesAvailable={bikesAvailable}
+          />
         </div>
       </div>
     </div>
