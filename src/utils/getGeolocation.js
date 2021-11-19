@@ -13,4 +13,4 @@ const asyncGetGeolocation = (
   });
 };
 
-export { asyncGetGeolocation };
+export default asyncGetGeolocation;
