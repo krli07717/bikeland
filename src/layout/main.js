@@ -24,6 +24,7 @@ function Main(props) {
       setIsLocatingUser(false);
       setUserPosition(userCoordinates);
     } catch (error) {
+      setIsLocatingUser(false);
       throw error;
     }
   }
