@@ -26,15 +26,6 @@ function Hamburger({ handleNavOpen }) {
   );
 }
 
-const emergencyPhone = (
-  <a href="tel: +886-800-001922" className="emergency_phone">
-    <div className="navlink_img">
-      <img src={phoneSvg} alt="phone icon" />
-    </div>
-    <h2 className="typography-bold typography-caption">聯絡單車客服</h2>
-  </a>
-);
-
 function Nav({ navOpen }) {
   const navLinkInfo = [
     {
@@ -56,6 +47,16 @@ function Nav({ navOpen }) {
       linkText: "找景點",
     },
   ];
+
+  const emergencyPhone = (
+    <a href="tel: +886-800-001922" className="emergency_phone">
+      <div className="navlink_img">
+        <img src={phoneSvg} alt="phone icon" />
+      </div>
+      <h2 className="typography-bold typography-caption">聯絡單車客服</h2>
+    </a>
+  );
+
   return (
     <nav className={navOpen ? "" : "hide"}>
       <div className="nav_wrapper">
