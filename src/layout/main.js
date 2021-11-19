@@ -14,17 +14,12 @@ import bicycleGreySvg from "../assets/icon-bicycle-grey.svg";
 import geolocactionSvg from "../assets/icon-geolocation.svg";
 import userPositionMobileSvg from "../assets/icon-user-position-mobile.svg";
 import React, { useState, useEffect, useRef } from "react";
-import { Routes, Route, Outlet, useParams } from "react-router-dom";
-import { asyncGetGeolocation } from "../utils/getGeolocation";
+import { Routes, Route } from "react-router-dom";
+import asyncGetGeolocation from "../utils/getGeolocation";
+import decideByAvailability from "../utils/decideByAvailability";
 import { getAvailableBikes } from "../utils/fetchTdxApi";
+import BikeResults from "../components/bikeResults";
 import L from "leaflet";
-
-function decideByAvailability(options) {
-  const { source, resultNone, resultFew, resultNormal } = options;
-  if (source === 0) return resultNone;
-  if (source <= 5) return resultFew;
-  return resultNormal;
-}
 
 function BikeMap({ userPosition, bikesAvailable, isFindingBikes }) {
   console.log("hello bikemap");
@@ -32,12 +27,10 @@ function BikeMap({ userPosition, bikesAvailable, isFindingBikes }) {
   const userPositionMarkerRef = useRef(null);
   const bikeMarkersRef = useRef([]);
 
+  //   create map
   useEffect(() => {
     if (bikeMapRef.current) return;
     console.log("creating map");
-
-    //   create map
-
     bikeMapRef.current = L.map("bike_map", {
       attributionControl: false,
       zoomControl: false,
@@ -52,12 +45,11 @@ function BikeMap({ userPosition, bikesAvailable, isFindingBikes }) {
     });
   }, []);
 
+  //  setView
   useEffect(() => {
-    //  setView
     if (!bikeMapRef.current) return; //no map
 
     console.log("setting view");
-
     // remove current user marker
     if (userPositionMarkerRef.current)
       bikeMapRef.current.removeLayer(userPositionMarkerRef.current);
@@ -83,6 +75,7 @@ function BikeMap({ userPosition, bikesAvailable, isFindingBikes }) {
     console.log("added user marker");
   }, [userPosition]);
 
+  //setting bikeMarkers
   useEffect(() => {
     if (!bikeMapRef.current) return; //no map
 
@@ -193,6 +186,7 @@ function BikeMap({ userPosition, bikesAvailable, isFindingBikes }) {
     // console.log(`after adding markers bikesRef: `, bikeMarkersRef.current);
   }, [bikesAvailable, isFindingBikes]);
 
+  //clear map unmount
   useEffect(() => {
     return function clearMap() {
       console.log("clearMap exec");
@@ -204,212 +198,6 @@ function BikeMap({ userPosition, bikesAvailable, isFindingBikes }) {
   }, []);
 
   return <div id="bike_map"></div>;
-}
-
-function Main(props) {
-  console.log("hello main");
-  const TAIPEI_COORDINATES = [25.03746, 121.564558];
-  const [userPosition, setUserPosition] = useState(TAIPEI_COORDINATES);
-  const [bikesAvailable, setBikesAvailable] = useState([]);
-  const [isLocatingUser, setIsLocatingUser] = useState(false);
-  const [isFindingBikes, setIsFindingBikes] = useState(true);
-
-  function handleFindingType() {
-    setIsFindingBikes((bool) => !bool);
-  }
-
-  async function handleLocateUser() {
-    try {
-      setIsLocatingUser(true);
-      const userCoordinates = await asyncGetGeolocation();
-      setIsLocatingUser(false);
-      console.log(userCoordinates);
-      setUserPosition(userCoordinates);
-    } catch (error) {
-      throw error;
-    }
-  }
-
-  //   useEffect(() => {
-  //     // find User position on first render
-  //     console.log("find User position on first render");
-  //     handleLocateUser();
-  //   }, []);
-
-  useEffect(() => {
-    console.log("fetching available bikes");
-    async function getBikes(userPosition) {
-      try {
-        const bikes = await getAvailableBikes(userPosition);
-        setBikesAvailable(bikes);
-      } catch (error) {
-        throw error;
-      }
-    }
-    getBikes(userPosition);
-  }, [userPosition]);
-
-  return (
-    <main>
-      <BikeMap
-        userPosition={userPosition}
-        bikesAvailable={bikesAvailable}
-        isFindingBikes={isFindingBikes}
-      />
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <MapInfo
-              handleLocateUser={handleLocateUser}
-              bikesAvailable={bikesAvailable}
-              isLocatingUser={isLocatingUser}
-              handleFindingType={handleFindingType}
-              isFindingBikes={isFindingBikes}
-            />
-          }
-        />
-        {/* <Route
-          path="/route"
-          element={
-            <MapInfo
-              handleLocateUser={handleLocateUser}
-              bikesAvailable={bikesAvailable}
-            />
-          }
-        />
-        <Route
-          path="/scene"
-          element={
-            <MapInfo
-              handleLocateUser={handleLocateUser}
-              bikesAvailable={bikesAvailable}
-            />
-          }
-        /> */}
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </main>
-  );
-}
-
-function BikeResults({ bikesAvailable, keyword, sortMethod }) {
-  console.log("hello bike results");
-
-  const sortMethods = {
-    0: (stationA, stationB) => 0, //fetched default
-    1: (stationA, stationB) =>
-      stationB.availableRentBikes - stationA.availableRentBikes,
-    2: (stationA, stationB) =>
-      stationB.availableReturnBikes - stationA.availableReturnBikes,
-    3: (stationA, stationB) => {
-      const stationAHour = /.*T(\d*)/g.exec(stationA.srcUpdateTime)[1];
-      const stationAMinute = /.*T\d*:(\d*)/g.exec(stationA.srcUpdateTime)[1];
-      const stationBHour = /.*T(\d*)/g.exec(stationB.srcUpdateTime)[1];
-      const stationBMinute = /.*T\d*:(\d*)/g.exec(stationB.srcUpdateTime)[1];
-      if (stationAHour === stationBHour) return stationBMinute - stationAMinute;
-      return stationBHour - stationAHour;
-    },
-  };
-
-  const bikeResults = bikesAvailable
-    .filter((station) => {
-      if (!keyword) return true;
-      return (
-        station.stationName.includes(keyword) ||
-        station.stationAddress.includes(keyword)
-      );
-    })
-    .sort(sortMethods[sortMethod])
-    .map((station) => {
-      const stationStatusText =
-        station.serviceStatus !== 1
-          ? "未營運"
-          : station.availableRentBikes > 0 && station.availableReturnBikes > 0
-          ? "可借可還"
-          : station.availableReturnBikes > 0
-          ? "只可停車"
-          : "只可借車";
-      const stationStatusStyle =
-        station.serviceStatus !== 1
-          ? "off"
-          : station.availableRentBikes === 0 ||
-            station.availableReturnBikes === 0
-          ? "limited"
-          : "";
-
-      const availableBikesStyle = decideByAvailability({
-        source: station.availableRentBikes,
-        resultNone: "none",
-        resultFew: "few",
-        resultNormal: "",
-      });
-
-      const availableParksStyle = decideByAvailability({
-        source: station.availableReturnBikes,
-        resultNone: "none",
-        resultFew: "few",
-        resultNormal: "",
-      });
-
-      const availableBikesImg = decideByAvailability({
-        source: station.availableRentBikes,
-        resultNone: <img src={bicycleGreySvg} alt="bicycle icon" />,
-        resultFew: <img src={bicycleRedSvg} alt="bicycle icon" />,
-        resultNormal: <img src={bicycle500Svg} alt="bicycle icon" />,
-      });
-
-      const availableParksImg = decideByAvailability({
-        source: station.availableReturnBikes,
-        resultNone: <img src={parkingGreySvg} alt="parking icon" />,
-        resultFew: <img src={parkingRedSvg} alt="parking icon" />,
-        resultNormal: <img src={parkingSvg} alt="parking icon" />,
-      });
-
-      const updateTime = /.*T(\d*:\d*)/g.exec(station.srcUpdateTime)[1];
-      const stationName = /(YouBike)?(.*)/g.exec(station.stationName)[2];
-      return (
-        <div className="bike_result" key={station.stationId}>
-          <div className="info">
-            <h3 className="typography-bold typography-button">{stationName}</h3>
-            <span
-              className={`status ${stationStatusStyle} typography-medium typography-caption`}
-            >
-              {stationStatusText}
-            </span>
-            <span className="distance typography-medium typography-caption">
-              {`${updateTime} 更新`}
-            </span>
-          </div>
-          <div className="available">
-            <div className={`available_bikes ${availableBikesStyle}`}>
-              {availableBikesImg}
-              <span className="typography-medium typography-button">
-                可租借
-              </span>
-              <span className="quantity typography-bold typography-h5">
-                {station.availableRentBikes}
-              </span>
-            </div>
-            <div className={`available_parks ${availableParksStyle}`}>
-              {availableParksImg}
-              <span className="typography-medium typography-button">
-                可停車
-              </span>
-              <span className="quantity typography-bold typography-h5">
-                {station.availableReturnBikes}
-              </span>
-            </div>
-          </div>
-        </div>
-      );
-    });
-
-  const noBikeResults = (
-    <h3 className="no_results typography-bold typography-h5">沒有搜尋結果</h3>
-  );
-
-  return bikeResults.length ? bikeResults : noBikeResults;
 }
 
 function MapInfo({
@@ -546,9 +334,81 @@ function MapInfo({
   );
 }
 
-function NotFound(props) {
-  //redirect
-  return <button>NOT FOUND</button>;
+function Main(props) {
+  console.log("hello main");
+  const TAIPEI_COORDINATES = [25.03746, 121.564558];
+  const [userPosition, setUserPosition] = useState(TAIPEI_COORDINATES);
+  const [bikesAvailable, setBikesAvailable] = useState([]);
+  const [isLocatingUser, setIsLocatingUser] = useState(false);
+  const [isFindingBikes, setIsFindingBikes] = useState(true);
+
+  function handleFindingType() {
+    setIsFindingBikes((bool) => !bool);
+  }
+
+  async function handleLocateUser() {
+    try {
+      setIsLocatingUser(true);
+      const userCoordinates = await asyncGetGeolocation();
+      setIsLocatingUser(false);
+      console.log(userCoordinates);
+      setUserPosition(userCoordinates);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  //   useEffect(() => {
+  //     // find User position on first render
+  //     console.log("find User position on first render");
+  //     handleLocateUser();
+  //   }, []);
+
+  //fetch available bikes
+  useEffect(() => {
+    console.log("fetching available bikes");
+    async function getBikes(userPosition) {
+      try {
+        const bikes = await getAvailableBikes(userPosition);
+        setBikesAvailable(bikes);
+      } catch (error) {
+        throw error;
+      }
+    }
+    getBikes(userPosition);
+  }, [userPosition]);
+
+  return (
+    <main>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <>
+              <BikeMap
+                userPosition={userPosition}
+                bikesAvailable={bikesAvailable}
+                isFindingBikes={isFindingBikes}
+              />
+              <MapInfo
+                handleLocateUser={handleLocateUser}
+                bikesAvailable={bikesAvailable}
+                isLocatingUser={isLocatingUser}
+                handleFindingType={handleFindingType}
+                isFindingBikes={isFindingBikes}
+              />
+            </>
+          }
+        />
+        {/* <Route path="*" element={<NotFound />} /> */}
+      </Routes>
+    </main>
+  );
 }
+
+// function NotFound(props) {
+//   //redirect
+//   return <button>NOT FOUND</button>;
+// }
 
 export default Main;
