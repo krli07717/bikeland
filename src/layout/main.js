@@ -21,7 +21,6 @@ import BikeResults from "../components/bikeResults";
 import L from "leaflet";
 
 function BikeMap({ userPosition, bikesAvailable, isFindingBikes }) {
-  console.log("hello bikemap");
   const bikeMapRef = useRef(null);
   const userPositionMarkerRef = useRef(null);
   const bikeMarkersRef = useRef([]);
@@ -29,7 +28,6 @@ function BikeMap({ userPosition, bikesAvailable, isFindingBikes }) {
   //   create map
   useEffect(() => {
     if (bikeMapRef.current) return;
-    console.log("creating map");
     bikeMapRef.current = L.map("bike_map", {
       attributionControl: false,
       zoomControl: false,
@@ -48,7 +46,6 @@ function BikeMap({ userPosition, bikesAvailable, isFindingBikes }) {
   useEffect(() => {
     if (!bikeMapRef.current) return; //no map
 
-    console.log("setting view");
     // remove current user marker
     if (userPositionMarkerRef.current)
       bikeMapRef.current.removeLayer(userPositionMarkerRef.current);
@@ -62,23 +59,17 @@ function BikeMap({ userPosition, bikesAvailable, isFindingBikes }) {
     });
 
     // create marker
-
     userPositionMarkerRef.current = L.marker(userPosition, {
       icon: userPositionIcon,
     });
 
     // add marker
-
     userPositionMarkerRef.current.addTo(bikeMapRef.current);
-
-    console.log("added user marker");
   }, [userPosition]);
 
   //setting bikeMarkers
   useEffect(() => {
     if (!bikeMapRef.current) return; //no map
-
-    console.log("setting bike markers");
 
     //remove previous bike markers
     bikeMarkersRef.current.forEach((bikeMarker) => {
@@ -176,14 +167,11 @@ function BikeMap({ userPosition, bikesAvailable, isFindingBikes }) {
       // bikesRef.current[index] add to map
       bikeMarkersRef.current[index].addTo(bikeMapRef.current);
     });
-
-    // console.log(`after adding markers bikesRef: `, bikeMarkersRef.current);
   }, [bikesAvailable, isFindingBikes]);
 
   //clear map unmount
   useEffect(() => {
     return function clearMap() {
-      console.log("clearMap exec");
       if (bikeMapRef.current) {
         bikeMapRef.current.remove();
         bikeMapRef.current = null;
@@ -329,7 +317,6 @@ function MapInfo({
 }
 
 function Main(props) {
-  console.log("hello main");
   const TAIPEI_COORDINATES = [25.03746, 121.564558];
   const [userPosition, setUserPosition] = useState(TAIPEI_COORDINATES);
   const [bikesAvailable, setBikesAvailable] = useState([]);
@@ -345,7 +332,6 @@ function Main(props) {
       setIsLocatingUser(true);
       const userCoordinates = await asyncGetGeolocation();
       setIsLocatingUser(false);
-      console.log(userCoordinates);
       setUserPosition(userCoordinates);
     } catch (error) {
       throw error;
@@ -360,7 +346,6 @@ function Main(props) {
 
   //fetch available bikes
   useEffect(() => {
-    console.log("fetching available bikes");
     async function getBikes(userPosition) {
       try {
         const bikes = await getAvailableBikes(userPosition);

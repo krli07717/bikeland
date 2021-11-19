@@ -448,12 +448,7 @@ button.geolocation:disabled {
 }
 
 .bike_result .distance {
-  /* display: inline-block; */
   margin-left: auto;
-  /* display: flex;
-  gap: 4px;
-  justify-content: space-between;
-  align-items: center; */
   color: var(--grey-500);
 }
 

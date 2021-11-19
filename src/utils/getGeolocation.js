@@ -3,7 +3,6 @@ const asyncGetGeolocation = (
 ) => {
   return new Promise((resolve, reject) => {
     function onResolve(data) {
-      console.log("get user promise resolved");
       resolve([data.coords.latitude, data.coords.longitude]);
     }
     function onReject(error) {

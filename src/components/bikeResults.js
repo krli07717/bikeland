@@ -10,8 +10,6 @@ import filterNoResults from "./filterNoResults";
 import decideByAvailability from "../utils/decideByAvailability";
 
 export default function BikeResults({ bikesAvailable, keyword, sortMethod }) {
-  console.log("hello bike results");
-
   const sortMethods = {
     0: (stationA, stationB) => 0, //fetched default
     1: (stationA, stationB) =>

@@ -74,7 +74,6 @@ function Nav({ navOpen }) {
 }
 
 function Header(props) {
-  console.log("hello header");
   const [navOpen, setNavOpen] = useState(false);
 
   function handleNavOpen() {
