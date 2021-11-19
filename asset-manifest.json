@@ -1,0 +1,40 @@
+{
+  "files": {
+    "main.css": "/bikeland/static/css/main.1a1ae4ee.chunk.css",
+    "main.js": "/bikeland/static/js/main.a391678b.chunk.js",
+    "main.js.map": "/bikeland/static/js/main.a391678b.chunk.js.map",
+    "runtime-main.js": "/bikeland/static/js/runtime-main.8ec690a6.js",
+    "runtime-main.js.map": "/bikeland/static/js/runtime-main.8ec690a6.js.map",
+    "static/js/2.bb18192c.chunk.js": "/bikeland/static/js/2.bb18192c.chunk.js",
+    "static/js/2.bb18192c.chunk.js.map": "/bikeland/static/js/2.bb18192c.chunk.js.map",
+    "index.html": "/bikeland/index.html",
+    "static/css/main.1a1ae4ee.chunk.css.map": "/bikeland/static/css/main.1a1ae4ee.chunk.css.map",
+    "static/js/2.bb18192c.chunk.js.LICENSE.txt": "/bikeland/static/js/2.bb18192c.chunk.js.LICENSE.txt",
+    "static/media/icon-bicycle-400.b9d2a608.svg": "/bikeland/static/media/icon-bicycle-400.b9d2a608.svg",
+    "static/media/icon-bicycle-500.9f48f63e.svg": "/bikeland/static/media/icon-bicycle-500.9f48f63e.svg",
+    "static/media/icon-bicycle-grey.e2b1d7d4.svg": "/bikeland/static/media/icon-bicycle-grey.e2b1d7d4.svg",
+    "static/media/icon-bicycle-red.90c43663.svg": "/bikeland/static/media/icon-bicycle-red.90c43663.svg",
+    "static/media/icon-bicycle-white.60cb5498.svg": "/bikeland/static/media/icon-bicycle-white.60cb5498.svg",
+    "static/media/main.css": "/bikeland/static/media/icon-search.23e53595.svg",
+    "static/media/icon-collapse-down.a7d0baff.svg": "/bikeland/static/media/icon-collapse-down.a7d0baff.svg",
+    "static/media/icon-collapse-top.269c0cf4.svg": "/bikeland/static/media/icon-collapse-top.269c0cf4.svg",
+    "static/media/icon-geolocation.7783d3dc.svg": "/bikeland/static/media/icon-geolocation.7783d3dc.svg",
+    "static/media/icon-hamburger.5ab53298.svg": "/bikeland/static/media/icon-hamburger.5ab53298.svg",
+    "static/media/icon-parking-grey.84ff3ab7.svg": "/bikeland/static/media/icon-parking-grey.84ff3ab7.svg",
+    "static/media/icon-parking-red.0b602e67.svg": "/bikeland/static/media/icon-parking-red.0b602e67.svg",
+    "static/media/icon-parking-white.95eab66a.svg": "/bikeland/static/media/icon-parking-white.95eab66a.svg",
+    "static/media/icon-parking.0d06e565.svg": "/bikeland/static/media/icon-parking.0d06e565.svg",
+    "static/media/icon-phone.da580534.svg": "/bikeland/static/media/icon-phone.da580534.svg",
+    "static/media/icon-route.6dc5afc7.svg": "/bikeland/static/media/icon-route.6dc5afc7.svg",
+    "static/media/icon-sort.f7f91b6d.svg": "/bikeland/static/media/icon-sort.f7f91b6d.svg",
+    "static/media/icon-user-position-mobile.dbd42942.svg": "/bikeland/static/media/icon-user-position-mobile.dbd42942.svg",
+    "static/media/icon-vacation.f4ddab30.svg": "/bikeland/static/media/icon-vacation.f4ddab30.svg",
+    "static/media/logo-light.0c6a71ad.svg": "/bikeland/static/media/logo-light.0c6a71ad.svg"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.8ec690a6.js",
+    "static/js/2.bb18192c.chunk.js",
+    "static/css/main.1a1ae4ee.chunk.css",
+    "static/js/main.a391678b.chunk.js"
+  ]
+}
