@@ -234,6 +234,18 @@ button.geolocation {
   background-color: var(--primary-400);
   border-radius: 50%;
   box-shadow: 4px 4px 20px 0px #7676764d;
+  animation: geolocationHint 0.8s ease-in-out 5 alternate;
+}
+
+@keyframes geolocationHint {
+  from {
+    background-color: var(--primary-600);
+    outline: 2px dashed var(--alert-300);
+  }
+  to {
+    background-color: var(--primary-400);
+    outline: 2px dashed var(--alert-300);
+  }
 }
 
 @media (min-width: 1200px) {
