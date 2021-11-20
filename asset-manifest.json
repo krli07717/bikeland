@@ -1,6 +1,6 @@
 {
   "files": {
-    "main.css": "/bikeland/static/css/main.1a1ae4ee.chunk.css",
+    "main.css": "/bikeland/static/css/main.94b4804b.chunk.css",
     "main.js": "/bikeland/static/js/main.8353937e.chunk.js",
     "main.js.map": "/bikeland/static/js/main.8353937e.chunk.js.map",
     "runtime-main.js": "/bikeland/static/js/runtime-main.8ec690a6.js",
@@ -8,7 +8,7 @@
     "static/js/2.bb18192c.chunk.js": "/bikeland/static/js/2.bb18192c.chunk.js",
     "static/js/2.bb18192c.chunk.js.map": "/bikeland/static/js/2.bb18192c.chunk.js.map",
     "index.html": "/bikeland/index.html",
-    "static/css/main.1a1ae4ee.chunk.css.map": "/bikeland/static/css/main.1a1ae4ee.chunk.css.map",
+    "static/css/main.94b4804b.chunk.css.map": "/bikeland/static/css/main.94b4804b.chunk.css.map",
     "static/js/2.bb18192c.chunk.js.LICENSE.txt": "/bikeland/static/js/2.bb18192c.chunk.js.LICENSE.txt",
     "static/media/icon-bicycle-400.b9d2a608.svg": "/bikeland/static/media/icon-bicycle-400.b9d2a608.svg",
     "static/media/icon-bicycle-500.9f48f63e.svg": "/bikeland/static/media/icon-bicycle-500.9f48f63e.svg",
@@ -34,7 +34,7 @@
   "entrypoints": [
     "static/js/runtime-main.8ec690a6.js",
     "static/js/2.bb18192c.chunk.js",
-    "static/css/main.1a1ae4ee.chunk.css",
+    "static/css/main.94b4804b.chunk.css",
     "static/js/main.8353937e.chunk.js"
   ]
 }
